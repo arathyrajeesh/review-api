@@ -1,8 +1,14 @@
 from rest_framework import viewsets, permissions
 from .models import Service, Review
-from .serializers import ServiceSerializer, ReviewSerializer
+from .serializers import ServiceSerializer, ReviewSerializer,UserSerializer
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from django.contrib.auth.models import User
+
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = User.objects.all().order_by('id')
+    serializer_class = UserSerializer
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
 
 class ServiceViewSet(viewsets.ModelViewSet):
     queryset = Service.objects.all()
