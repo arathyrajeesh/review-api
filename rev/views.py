@@ -1,9 +1,9 @@
 from rest_framework import viewsets, permissions
 from .models import Service, Review
 from .serializers import ServiceSerializer, ReviewSerializer, UserSerializer
-from rest_framework.decorators import action
-from rest_framework.response import Response
 from django.contrib.auth.models import User
+from .permissions import IsAdminOrReadOnly, IsOwnerOrAdminOrReadOnly
+
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all().order_by('id')
@@ -14,22 +14,16 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 class ServiceViewSet(viewsets.ModelViewSet):
     queryset = Service.objects.all()
     serializer_class = ServiceSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAdminOrReadOnly]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
-
-    @action(detail=True, methods=['get'])
-    def reviews(self, request, pk=None):
-        service = self.get_object()
-        serializer = ReviewSerializer(service.reviews.all(), many=True)
-        return Response(serializer.data)
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsOwnerOrAdminOrReadOnly]
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
