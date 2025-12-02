@@ -7,7 +7,7 @@ from django.http import HttpResponseForbidden
 from rev.models import Service, Review, Cart
 
 def home(request):
-    services = Service.objects.all()[:6]  # Show latest 6 services
+    services = Service.objects.all()[:6]  
     return render(request, 'frontend/home.html', {'services': services})
 
 def services_list(request):
