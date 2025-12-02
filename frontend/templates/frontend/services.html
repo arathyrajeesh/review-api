@@ -1,0 +1,30 @@
+{% extends 'frontend/base.html' %}
+
+{% block title %}Services - Service Review{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">All Services</h1>
+    </div>
+</div>
+
+<div class="row">
+    {% for service in services %}
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">{{ service.name }}</h5>
+                <p class="card-text">{{ service.description|truncatechars:100 }}</p>
+                <p class="text-muted">By {{ service.user.username }}</p>
+                <a href="{% url 'service_detail' service.id %}" class="btn btn-primary">View Details</a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <p>No services available yet.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,82 @@
+{% extends 'frontend/base.html' %}
+
+{% block title %}{{ service.name }} - Service Review{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1>{{ service.name }}</h1>
+        <p class="text-muted">By {{ service.user.username }}</p>
+        <p>{{ service.description }}</p>
+
+        {% if user.is_authenticated %}
+            {% if in_cart %}
+                <button class="btn btn-success" disabled>In Cart</button>
+            {% else %}
+                <form method="post" action="{% url 'add_to_cart' service.id %}" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Add to Cart</button>
+                </form>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <h3>Reviews</h3>
+        {% if reviews %}
+            {% for review in reviews %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ review.user.username }}</h5>
+                    <p class="card-text">Rating: {{ review.rating }}/5</p>
+                    {% if review.comment %}
+                        <p class="card-text">{{ review.comment }}</p>
+                    {% endif %}
+                    <small class="text-muted">{{ review.created_at }}</small>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <p>No reviews yet.</p>
+        {% endif %}
+
+        {% if user.is_authenticated and not user_review %}
+            <div class="mt-4">
+                <h4>Add Your Review</h4>
+                <form method="post" action="{% url 'add_review' service.id %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="rating" class="form-label">Rating</label>
+                        <select class="form-select" id="rating" name="rating" required>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="comment" class="form-label">Comment</label>
+                        <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit Review</button>
+                </form>
+            </div>
+        {% elif user_review %}
+            <div class="mt-4">
+                <h4>Your Review</h4>
+                <div class="card">
+                    <div class="card-body">
+                        <p>Rating: {{ user_review.rating }}/5</p>
+                        {% if user_review.comment %}
+                            <p>{{ user_review.comment }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

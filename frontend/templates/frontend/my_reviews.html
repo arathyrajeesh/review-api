@@ -1,0 +1,35 @@
+{% extends 'frontend/base.html' %}
+
+{% block title %}My Reviews - Service Review{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">My Reviews</h1>
+    </div>
+</div>
+
+<div class="row">
+    {% for review in reviews %}
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <a href="{% url 'service_detail' review.service.id %}">{{ review.service.name }}</a>
+                </h5>
+                <p class="card-text">Rating: {{ review.rating }}/5</p>
+                {% if review.comment %}
+                    <p class="card-text">{{ review.comment }}</p>
+                {% endif %}
+                <small class="text-muted">Reviewed on {{ review.created_at|date:"M d, Y" }}</small>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <p>You haven't reviewed any services yet.</p>
+        <a href="{% url 'services_list' %}" class="btn btn-primary">Browse Services</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
